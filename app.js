@@ -1,4 +1,4 @@
-// 1. Initialize Map
+// Initialize Map
 var map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 var marker = L.marker([0, 0]).addTo(map);
@@ -6,39 +6,41 @@ var marker = L.marker([0, 0]).addTo(map);
 window.userLat = 0;
 window.userLng = 0;
 
-// 2. Continuous GPS Tracking (Always keeps location ready)
+// Track Location
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
         window.userLat = position.coords.latitude;
         window.userLng = position.coords.longitude;
-        map.setView([window.userLat, window.userLng], 16);
-        marker.setLatLng([window.userLat, window.userLng]);
-    }, null, { enableHighAccuracy: true });
+        document.getElementById('status').innerText = "GPS Active: " + window.userLat.toFixed(4) + ", " + window.userLng.toFixed(4);
+        
+        let coords = [window.userLat, window.userLng];
+        map.setView(coords, 16);
+        marker.setLatLng(coords);
+    }, error => {
+        document.getElementById('status').innerText = "Error: Please allow location.";
+    }, { enableHighAccuracy: true });
 }
 
-// 3. Manual SOS Function
-function sendManualSOS() {
-    // Provide visual feedback
-    document.body.style.backgroundColor = "#d32f2f";
-    document.getElementById('status').innerText = "🚨 ALERT SENT! NOTIFYING POLICE & HOSPITAL...";
+function sendEmergencyAlert() {
+    const name = document.getElementById('userName').value || "Unknown User";
+    const phone = document.getElementById('userPhone').value || "No Phone Provided";
+    const locString = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
 
-    const name = document.getElementById('userName').value || "Manual User";
-    const phone = document.getElementById('userPhone').value || "No Phone";
-    const mapsLink = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
-
-    // --- REPLACE THESE WITH YOUR GOOGLE FORM DATA ---
-    const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID_HERE/formResponse";
+    // PASTE YOUR DATA HERE:
+    const formURL = "https://docs.google.com/forms/d/e/PASTE_YOUR_LONG_FORM_ID_HERE/formResponse";
+    
     const formData = new FormData();
-    formData.append("entry.21141611951", name);     // Use your Name Entry ID
-    formData.append("entry.223773848", phone);    // Use your Phone Entry ID
-    formData.append("entry.6325147895", mapsLink); // Use your Location Entry ID
+    formData.append("entry.NUMBER1", name);   // Name ID
+    formData.append("entry.NUMBER2", phone);  // Phone ID
+    formData.append("entry.NUMBER3", locString); // Location ID
 
-    fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
-    .then(() => {
-        alert("Emergency units have been dispatched to your fleet location.");
-    })
-    .catch(() => {
-        alert("Connection Error. SOS logged locally.");
+    fetch(formURL, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+    }).then(() => {
+        alert("🚨 SOS SENT! Details logged in Emergency Sheet.");
+    }).catch(() => {
+        alert("Network Error. Could not send alert.");
     });
 }
-
