@@ -59,4 +59,19 @@ function sendEmergencyAlert() {
         // This simulates sending to Police/Hospital by updating your Sheet
         alert("Emergency Services (Police & Hospital) have been notified of your location!");
     });
+    function requestPermission() {
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(response => {
+                if (response == 'granted') {
+                    document.getElementById('accelBtn').style.display = 'none';
+                }
+            })
+            .catch(console.error);
+    } else {
+        // For non-iOS devices, it is usually granted by default
+        document.getElementById('accelBtn').style.display = 'none';
+    }
 }
+}
+
