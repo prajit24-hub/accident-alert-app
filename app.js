@@ -1,71 +1,38 @@
-let map;
-let marker;
-let accidentDetected = false;
+let map, marker;
 
 function startTracking() {
-  document.getElementById("status").innerText = "Monitoring started...";
+  const status = document.getElementById("status");
+  status.innerText = "Getting your location...";
 
-  // Start GPS
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
 
-      updateMap(lat, lon);
-    },
-    function () {
-      alert("Location permission denied");
-    }
-  );
+        status.innerText = `Latitude: ${lat}\nLongitude: ${lng}`;
 
-  // Start accident detection (mobile)
-  startAccidentDetection();
-}
+        // Initialize map
+        if (!map) {
+          map = L.map('map').setView([lat, lng], 15);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+          }).addTo(map);
+        }
 
-function updateMap(lat, lon) {
-  document.getElementById("status").innerText =
-    "Latitude: " + lat + " , Longitude: " + lon;
+        // Add marker
+        if (marker) {
+          marker.setLatLng([lat, lng]);
+        } else {
+          marker = L.marker([lat, lng]).addTo(map);
+        }
 
-  if (!map) {
-    map = L.map("map").setView([lat, lon], 15);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap"
-    }).addTo(map);
-
-    marker = L.marker([lat, lon]).addTo(map);
+      },
+      error => {
+        status.innerText = "Location permission denied or error!";
+      }
+    );
   } else {
-    marker.setLatLng([lat, lon]);
-    map.setView([lat, lon]);
+    status.innerText = "Geolocation not supported";
   }
-}
-
-function startAccidentDetection() {
-  if (!window.DeviceMotionEvent) {
-    console.log("Device motion not supported");
-    return;
-  }
-
-  window.addEventListener("devicemotion", function (event) {
-    if (accidentDetected) return;
-
-    const acc = event.accelerationIncludingGravity;
-    if (!acc) return;
-
-    const totalAcc =
-      Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-
-    // Threshold (tune for demo)
-    if (totalAcc > 30) {
-      accidentDetected = true;
-      onAccidentDetected();
-    }
-  });
-}
-
-function onAccidentDetected() {
-  document.getElementById("status").innerText =
-    "🚨 Accident detected! Sending alert...";
-
-  alert("Accident detected!\nAlerting hospitals & police (simulation)");
 }
