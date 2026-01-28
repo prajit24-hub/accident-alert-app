@@ -6,10 +6,12 @@ var marker = L.marker([0, 0]).addTo(map);
 window.userLat = 0;
 window.userLng = 0;
 
-let shakeStartTime = null; 
+let isInAir = false;
+let airTimeStart = 0;
 let isAlertSent = false;
-const REQUIRED_SHAKE_DURATION = 3000; // 3 seconds in milliseconds
-const SHAKE_THRESHOLD = 50; // Intensity of the shake
+
+const IMPACT_THRESHOLD = 90; // High G-force spike on landing
+const FREEFALL_THRESHOLD = 2.0; // Near zero-G (floating in air)
 
 // 1. Get GPS Location
 if (navigator.geolocation) {
@@ -21,35 +23,36 @@ if (navigator.geolocation) {
     }, null, { enableHighAccuracy: true });
 }
 
-// 2. CONTINUOUS SHAKE DETECTION
+// 2. IN-AIR & IMPACT DETECTION
 if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', (event) => {
         let acc = event.accelerationIncludingGravity;
-        let totalMovement = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+        if (!acc) return;
 
-        if (totalMovement > SHAKE_THRESHOLD) {
-            // Shaking is happening
-            if (!shakeStartTime) {
-                shakeStartTime = Date.now(); // Start the timer
-            } else {
-                let duration = Date.now() - shakeStartTime;
-                
-                // Update UI to show progress
-                if (!isAlertSent) {
-                    document.getElementById('status').innerText = `Shaking detected: ${(duration/1000).toFixed(1)}s`;
-                }
+        let totalG = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
 
-                if (duration >= REQUIRED_SHAKE_DURATION && !isAlertSent) {
-                    isAlertSent = true; 
-                    sendEmergencyAlert();
-                }
+        // STEP A: Detect Free-fall (Phone is in the air)
+        if (totalG < FREEFALL_THRESHOLD) {
+            isInAir = true;
+            airTimeStart = Date.now();
+            document.getElementById('status').innerText = "Status: Free-fall Detected...";
+        }
+
+        // STEP B: Detect the Landing Impact
+        if (isInAir && totalG > IMPACT_THRESHOLD) {
+            let timeInAir = Date.now() - airTimeStart;
+            
+            // If it was in the air for a short time and hit hard, it's a crash
+            if (timeInAir > 100 && !isAlertSent) { 
+                isAlertSent = true;
+                sendEmergencyAlert();
+                isInAir = false; 
             }
-        } else {
-            // Shaking stopped - Reset timer
-            if (!isAlertSent) {
-                shakeStartTime = null;
-                document.getElementById('status').innerText = "System Monitoring...";
-            }
+        }
+
+        // Reset if it stays steady for too long without impact
+        if (isInAir && (Date.now() - airTimeStart > 2000)) {
+            isInAir = false;
         }
     });
 }
@@ -57,7 +60,7 @@ if (window.DeviceMotionEvent) {
 // 3. SOS FUNCTION
 function sendEmergencyAlert() {
     document.body.style.backgroundColor = "red";
-    document.getElementById('status').innerText = "🚨 EMERGENCY: CONTINUOUS IMPACT DETECTED!";
+    document.getElementById('status').innerText = "🚨 CRASH DETECTED: IMPACT AFTER FREE-FALL!";
 
     const name = document.getElementById('userName').value || "Unknown User";
     const phone = document.getElementById('userPhone').value || "No Phone";
@@ -71,7 +74,7 @@ function sendEmergencyAlert() {
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
     .then(() => {
-        alert("Continuous impact detected. Emergency services notified!");
+        alert("Impact detected. Emergency services notified with GPS location!");
     });
 }
 
@@ -87,6 +90,6 @@ function requestPermission() {
             .catch(console.error);
     } else {
         document.getElementById('accelBtn').style.display = 'none';
-        alert("Sensors active!");
+        alert("Motion Sensors Active");
     }
 }
