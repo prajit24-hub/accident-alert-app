@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual SOS Emergency App</title>
+    <title>Accident Alert SOS</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Emergency Alert System</h1>
+
+    <div class="app-container">
+        <h1>EMERGENCY ALERT</h1>
         
-        <div class="input-group">
-            <input type="text" id="userName" placeholder="Driver/User Name">
-            <input type="tel" id="userPhone" placeholder="Emergency Contact Number">
+        <div class="user-inputs">
+            <input type="text" id="userName" placeholder="Your Full Name">
+            <input type="tel" id="userPhone" placeholder="Emergency Phone Number">
         </div>
-        
+
         <div id="map"></div>
 
-        <button class="sos-btn" onclick="sendManualSOS()">
-            <div class="inner-btn">SOS</div>
+        <button class="sos-button" onclick="sendEmergencyAlert()">
+            <div class="inner-circle">SOS</div>
         </button>
         
-        <p id="status">GPS active. Tap SOS in case of emergency.</p>
+        <p id="status">Waiting for GPS...</p>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script>
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
