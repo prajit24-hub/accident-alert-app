@@ -1,18 +1,13 @@
 {
-  "name": "Accident Alert App",
+  "name": "Accident Alert SOS",
   "short_name": "SOS Alert",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f0f0f",
-  "theme_color": "#ff4d4d",
+  "theme_color": "#ff0000",
   "icons": [
     {
-      "src": "icon1.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon2.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/564/564619.png",
       "sizes": "512x512",
       "type": "image/png"
     }
