@@ -11,7 +11,7 @@ function autoSendSOS() {
     const lng = position.coords.longitude;
     const time = new Date().toLocaleString();
 
-    const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSd75j7BXWhMReBrYrzn88mhTtIYGukzjFO12d--HEIX-eXZgA/viewform?usp=publish-editor";
+    const formURL = "https://docs.google.com/forms/d/e/1FAIpQLScQmQZSvhlYMdN7xxgjjRglVukN_2M76l7St1O4zB83VCU1tw/formResponse";
 
     const data = new FormData();
     data.append("entry.20476386660", "Test User");                 
@@ -35,3 +35,4 @@ function autoSendSOS() {
     alert("Location permission denied");
   });
 }
+
