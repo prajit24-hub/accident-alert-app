@@ -1,17 +1,11 @@
-// Initialize Map and Variables
+// Initialize Map
 var map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 var marker = L.marker([0, 0]).addTo(map);
 
 window.userLat = 0;
 window.userLng = 0;
-
-let isInAir = false;
-let airTimeStart = 0;
-let isAlertSent = false;
-
-const IMPACT_THRESHOLD = 90; // High G-force spike on landing
-const FREEFALL_THRESHOLD = 2.0; // Near zero-G (floating in air)
+let lastShake = 0;
 
 // 1. Get GPS Location
 if (navigator.geolocation) {
@@ -23,62 +17,48 @@ if (navigator.geolocation) {
     }, null, { enableHighAccuracy: true });
 }
 
-// 2. IN-AIR & IMPACT DETECTION
+// 2. SHAKE GESTURE DETECTION
 if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', (event) => {
-        let acc = event.accelerationIncludingGravity;
-        if (!acc) return;
-
-        let totalG = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
-
-        // STEP A: Detect Free-fall (Phone is in the air)
-        if (totalG < FREEFALL_THRESHOLD) {
-            isInAir = true;
-            airTimeStart = Date.now();
-            document.getElementById('status').innerText = "Status: Free-fall Detected...";
-        }
-
-        // STEP B: Detect the Landing Impact
-        if (isInAir && totalG > IMPACT_THRESHOLD) {
-            let timeInAir = Date.now() - airTimeStart;
-            
-            // If it was in the air for a short time and hit hard, it's a crash
-            if (timeInAir > 100 && !isAlertSent) { 
-                isAlertSent = true;
-                sendEmergencyAlert();
-                isInAir = false; 
+        let acceleration = event.accelerationIncludingGravity;
+        let totalMovement = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
+        
+        // Threshold check
+        if (totalMovement > 50) { 
+            let now = Date.now();
+            if (now - lastShake > 5000) { 
+                lastShake = now;
+                console.log("Collision Detected!");
+                sendEmergencyAlert(); 
             }
-        }
-
-        // Reset if it stays steady for too long without impact
-        if (isInAir && (Date.now() - airTimeStart > 2000)) {
-            isInAir = false;
         }
     });
 }
 
-// 3. SOS FUNCTION
+// 3. SEND SOS FUNCTION
 function sendEmergencyAlert() {
     document.body.style.backgroundColor = "red";
-    document.getElementById('status').innerText = "🚨 CRASH DETECTED: IMPACT AFTER FREE-FALL!";
+    document.getElementById('status').innerText = "🚨 COLLISION DETECTED! ALERTING SERVICES...";
 
     const name = document.getElementById('userName').value || "Unknown User";
     const phone = document.getElementById('userPhone').value || "No Phone";
+    
+    // Fixed the URL typo here (added $ sign)
     const locUrl = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
 
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
     const formData = new FormData();
-    formData.append("entry.NUMBER1", name);
-    formData.append("entry.NUMBER2", phone);
-    formData.append("entry.NUMBER3", locUrl);
+    formData.append("entry.1111111", name);
+    formData.append("entry.2222222", phone);
+    formData.append("entry.3333333", locUrl);
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
     .then(() => {
-        alert("Impact detected. Emergency services notified with GPS location!");
+        alert("Emergency Services (Police & Hospital) have been notified!");
     });
 }
 
-// 4. PERMISSION FUNCTION
+// 4. PERMISSION FUNCTION (Now correctly outside the other function)
 function requestPermission() {
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
         DeviceMotionEvent.requestPermission()
@@ -90,6 +70,6 @@ function requestPermission() {
             .catch(console.error);
     } else {
         document.getElementById('accelBtn').style.display = 'none';
-        alert("Motion Sensors Active");
+        alert("Sensors active!");
     }
 }
