@@ -1,15 +1,12 @@
 {
-  "name": "Accident Alert SOS",
-  "short_name": "SOS Alert",
+  "name": "Emergency SOS App",
+  "short_name": "SOS",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f0f0f",
-  "theme_color": "#ff0000",
+  "theme_color": "#ff4d4d",
   "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/564/564619.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "icon 1.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon 2.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
