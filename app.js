@@ -1,11 +1,15 @@
-// Initialize Map
+// Initialize Map and Variables
 var map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 var marker = L.marker([0, 0]).addTo(map);
 
 window.userLat = 0;
 window.userLng = 0;
-let lastShake = 0;
+
+let shakeStartTime = null; 
+let isAlertSent = false;
+const REQUIRED_SHAKE_DURATION = 3000; // 3 seconds in milliseconds
+const SHAKE_THRESHOLD = 50; // Intensity of the shake
 
 // 1. Get GPS Location
 if (navigator.geolocation) {
@@ -17,49 +21,62 @@ if (navigator.geolocation) {
     }, null, { enableHighAccuracy: true });
 }
 
-// 2. SHAKE GESTURE DETECTION
+// 2. CONTINUOUS SHAKE DETECTION
 if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', (event) => {
-        let acceleration = event.accelerationIncludingGravity;
-        
-        // Calculate the "strength" of the movement
-        let totalMovement = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
-        
-        // Threshold: 30 is a very hard shake (collision). Adjust if needed.
-        if (totalMovement > 50) { 
-            let now = Date.now();
-            if (now - lastShake > 5000) { // Prevent multiple alerts in 5 seconds
-                lastShake = now;
-                console.log("Collision Detected!");
-                sendEmergencyAlert(); // Automatically triggers the SOS
+        let acc = event.accelerationIncludingGravity;
+        let totalMovement = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+
+        if (totalMovement > SHAKE_THRESHOLD) {
+            // Shaking is happening
+            if (!shakeStartTime) {
+                shakeStartTime = Date.now(); // Start the timer
+            } else {
+                let duration = Date.now() - shakeStartTime;
+                
+                // Update UI to show progress
+                if (!isAlertSent) {
+                    document.getElementById('status').innerText = `Shaking detected: ${(duration/1000).toFixed(1)}s`;
+                }
+
+                if (duration >= REQUIRED_SHAKE_DURATION && !isAlertSent) {
+                    isAlertSent = true; 
+                    sendEmergencyAlert();
+                }
+            }
+        } else {
+            // Shaking stopped - Reset timer
+            if (!isAlertSent) {
+                shakeStartTime = null;
+                document.getElementById('status').innerText = "System Monitoring...";
             }
         }
     });
 }
 
-// 3. SEND SOS FUNCTION
+// 3. SOS FUNCTION
 function sendEmergencyAlert() {
-    // Visual feedback for the user
     document.body.style.backgroundColor = "red";
-    document.getElementById('status').innerText = "🚨 COLLISION DETECTED! ALERTING SERVICES...";
+    document.getElementById('status').innerText = "🚨 EMERGENCY: CONTINUOUS IMPACT DETECTED!";
 
     const name = document.getElementById('userName').value || "Unknown User";
     const phone = document.getElementById('userPhone').value || "No Phone";
     const locUrl = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
 
-    // Update your Form ID and Entries here
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
     const formData = new FormData();
-    formData.append("entry.1111111", name);
-    formData.append("entry.2222222", phone);
-    formData.append("entry.3333333", locUrl);
+    formData.append("entry.NUMBER1", name);
+    formData.append("entry.NUMBER2", phone);
+    formData.append("entry.NUMBER3", locUrl);
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
     .then(() => {
-        // This simulates sending to Police/Hospital by updating your Sheet
-        alert("Emergency Services (Police & Hospital) have been notified of your location!");
+        alert("Continuous impact detected. Emergency services notified!");
     });
-    function requestPermission() {
+}
+
+// 4. PERMISSION FUNCTION
+function requestPermission() {
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
         DeviceMotionEvent.requestPermission()
             .then(response => {
@@ -69,17 +86,7 @@ function sendEmergencyAlert() {
             })
             .catch(console.error);
     } else {
-        // For non-iOS devices, it is usually granted by default
         document.getElementById('accelBtn').style.display = 'none';
+        alert("Sensors active!");
     }
 }
-}
-
-
-
-
-
-
-
-
-
