@@ -29,9 +29,9 @@ function sendManualSOS() {
     // --- REPLACE THESE WITH YOUR GOOGLE FORM DATA ---
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID_HERE/formResponse";
     const formData = new FormData();
-    formData.append("entry.1111111", name);     // Use your Name Entry ID
-    formData.append("entry.2222222", phone);    // Use your Phone Entry ID
-    formData.append("entry.3333333", mapsLink); // Use your Location Entry ID
+    formData.append("entry.21141611951", name);     // Use your Name Entry ID
+    formData.append("entry.223773848", phone);    // Use your Phone Entry ID
+    formData.append("entry.6325147895", mapsLink); // Use your Location Entry ID
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
     .then(() => {
@@ -41,3 +41,4 @@ function sendManualSOS() {
         alert("Connection Error. SOS logged locally.");
     });
 }
+
