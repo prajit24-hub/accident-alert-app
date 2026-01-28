@@ -26,7 +26,7 @@ if (window.DeviceMotionEvent) {
         let totalMovement = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
         
         // Threshold: 30 is a very hard shake (collision). Adjust if needed.
-        if (totalMovement > 100) { 
+        if (totalMovement > 50) { 
             let now = Date.now();
             if (now - lastShake > 5000) { // Prevent multiple alerts in 5 seconds
                 lastShake = now;
@@ -74,6 +74,7 @@ function sendEmergencyAlert() {
     }
 }
 }
+
 
 
 
