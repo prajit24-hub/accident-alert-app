@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accident Alert PWA</title>
+    <title>Manual SOS Emergency App</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div class="container">
-        <h1>Emergency System</h1>
-        <input type="text" id="userName" placeholder="Driver Name">
-        <input type="tel" id="userPhone" placeholder="Emergency Contact">
+        <h1>Emergency Alert System</h1>
         
-        <button id="accelBtn" onclick="requestPermission()">START TRIP (Enable Sensors)</button>
+        <div class="input-group">
+            <input type="text" id="userName" placeholder="Driver/User Name">
+            <input type="tel" id="userPhone" placeholder="Emergency Contact Number">
+        </div>
         
         <div id="map"></div>
-        <p id="status">Ready to monitor...</p>
+
+        <button class="sos-btn" onclick="sendManualSOS()">
+            <div class="inner-btn">SOS</div>
+        </button>
+        
+        <p id="status">GPS active. Tap SOS in case of emergency.</p>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
