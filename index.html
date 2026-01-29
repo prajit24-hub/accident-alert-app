@@ -1,24 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Emergency Communication App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
+    <title>Emergency SOS App</title>
 </head>
 <body>
+    <h1>🚨 Emergency SOS</h1>
+    <button onclick="sendSOS('Button')">SEND SOS</button>
 
-  <h1>🚨 Emergency SOS</h1>
+    <script>
+        function sendSOS(triggerType) {
+            navigator.geolocation.getCurrentPosition(
+                function(position){
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
 
-  <button onclick="sendSOS('Button')">SEND SOS</button>
+                    // Replace FORM_ID and entry IDs with your pre-filled link ones
+                    let formURL = 
+                      "https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url" +
+                      "&entry.2110052793=" + lat + 
+                      "&entry.773656180=" + lon + 
+                      "&entry.354081134=" + triggerType;
 
-  <p id="status">Shake phone to send SOS</p>
+                    window.open(formURL, "_blank"); // Open form with data
+                    alert("SOS Sent!\nLatitude: "+lat+"\nLongitude: "+lon);
+                },
+                function(){
+                    alert("Location permission denied!");
+                }
+            );
+        }
 
-  <!-- MAP DISPLAY -->
-  <iframe id="map" width="100%" height="300" frameborder="0"></iframe>
-
-  <script src="script.js"></script>
+        // Shake detection (optional)
+        let lastX=0, lastY=0, lastZ=0, threshold=15;
+        window.addEventListener("devicemotion", function(event){
+            let acc = event.accelerationIncludingGravity;
+            let delta = Math.abs(acc.x-lastX)+Math.abs(acc.y-lastY)+Math.abs(acc.z-lastZ);
+            if(delta > threshold){ sendSOS("Shake"); }
+            lastX=acc.x; lastY=acc.y; lastZ=acc.z;
+        });
+    </script>
 </body>
 </html>
