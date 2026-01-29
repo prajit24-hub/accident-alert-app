@@ -1,43 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Emergency SOS App</title>
+    <meta charset="UTF-8">
+    <title>Emergency SOS Web App</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>🚨 Emergency SOS</h1>
-    <button onclick="sendSOS('Button')">SEND SOS</button>
+    <button id="sosBtn">SEND SOS</button>
+    <iframe id="map"></iframe>
 
-    <script>
-        function sendSOS(triggerType) {
-            navigator.geolocation.getCurrentPosition(
-                function(position){
-                    let lat = position.coords.latitude;
-                    let lon = position.coords.longitude;
-
-                    // Replace FORM_ID and entry IDs with your pre-filled link ones
-                    let formURL = 
-                      "https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url" +
-                      "&entry.2110052793=" + lat + 
-                      "&entry.773656180=" + lon + 
-                      "&entry.354081134=" + triggerType;
-
-                    window.open(formURL, "_blank"); // Open form with data
-                    alert("SOS Sent!\nLatitude: "+lat+"\nLongitude: "+lon);
-                },
-                function(){
-                    alert("Location permission denied!");
-                }
-            );
-        }
-
-        // Shake detection (optional)
-        let lastX=0, lastY=0, lastZ=0, threshold=15;
-        window.addEventListener("devicemotion", function(event){
-            let acc = event.accelerationIncludingGravity;
-            let delta = Math.abs(acc.x-lastX)+Math.abs(acc.y-lastY)+Math.abs(acc.z-lastZ);
-            if(delta > threshold){ sendSOS("Shake"); }
-            lastX=acc.x; lastY=acc.y; lastZ=acc.z;
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
