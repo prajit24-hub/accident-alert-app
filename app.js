@@ -15,9 +15,9 @@ function sendSOS() {
 
       // --- SEND TO GOOGLE SHEET ---
       const data = new FormData();
-      data.append("entry.1111111111", lat);   // Latitude
-      data.append("entry.2222222222", lng);   // Longitude
-      data.append("entry.3333333333", "SOS"); // Status
+      data.append("entry.2114161195", lat);   // Latitude
+      data.append("entry.223773848", lng);   // Longitude
+      data.append("entry.6325147895", "SOS"); // Status
 
       fetch(formURL, {
         method: "POST",
@@ -40,3 +40,4 @@ function sendSOS() {
     }
   );
 }
+
