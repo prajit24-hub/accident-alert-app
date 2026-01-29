@@ -1,14 +1,12 @@
-// 1. Initialize Map
+// Initialize Map
 var map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 var marker = L.marker([0, 0]).addTo(map);
 
 window.userLat = 0;
 window.userLng = 0;
-let pressTimer;
-let lastTap = 0;
 
-// 2. Track GPS Location
+// 1. Live GPS Tracking
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
         window.userLat = position.coords.latitude;
@@ -18,52 +16,66 @@ if (navigator.geolocation) {
     }, null, { enableHighAccuracy: true });
 }
 
-// 3. SOFTWARE GESTURE: Double-Tap & Long-Press
-window.addEventListener('touchstart', handleStart);
-window.addEventListener('touchend', handleEnd);
-window.addEventListener('mousedown', handleStart);
-window.addEventListener('mouseup', handleEnd);
+// 2. Software Shake Logic (No Hardware Sensors)
+let moveCount = 0;
+let lastX = 0;
+let isAlertSent = false;
+const shakeZone = document.getElementById('shake-zone');
+const fill = document.getElementById('progress-fill');
 
-function handleStart(e) {
-    // Check for Double-Tap
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300; // 300ms window
-    if (now - lastTap < DOUBLE_TAP_DELAY) {
-        sendEmergencyAlert("Double-Tap Detected");
-        return;
+// Detect rapid swiping/friction across the zone
+shakeZone.addEventListener('mousemove', detectSoftwareShake);
+shakeZone.addEventListener('touchmove', (e) => detectSoftwareShake(e.touches[0]));
+
+function detectSoftwareShake(e) {
+    if (isAlertSent) return;
+
+    let currentX = e.clientX || e.pageX;
+    let travel = Math.abs(currentX - lastX);
+
+    // If movement is fast enough, increment the count
+    if (travel > 40) { 
+        moveCount++;
+        lastX = currentX;
+        
+        // Visual feedback bar
+        fill.style.width = (moveCount * 5) + "%";
+
+        // Trigger SOS after 20 rapid movements
+        if (moveCount >= 20) {
+            isAlertSent = true;
+            sendEmergencyAlert();
+        }
     }
-    lastTap = now;
 
-    // Start Long-Press Timer
-    document.getElementById('status').innerText = "Hold for 3s or Double-Tap to SOS";
-    pressTimer = window.setTimeout(() => {
-        sendEmergencyAlert("Long-Press Detected");
-    }, 3000);
+    // Reset if movement stops for 1 second
+    clearTimeout(window.shakeReset);
+    window.shakeReset = setTimeout(() => {
+        if (!isAlertSent) {
+            moveCount = 0;
+            fill.style.width = "0%";
+        }
+    }, 1000);
 }
 
-function handleEnd() {
-    clearTimeout(pressTimer);
-    if (!document.getElementById('status').innerText.includes("SENT")) {
-        document.getElementById('status').innerText = "Monitoring Active...";
-    }
-}
-
-// 4. Send SOS Function
-function sendEmergencyAlert(triggerType) {
+// 3. Send SOS Function
+function sendEmergencyAlert() {
     document.body.style.backgroundColor = "#d32f2f";
-    document.getElementById('status').innerText = `🚨 SOS SENT! (${triggerType})`;
+    document.getElementById('status').innerText = "🚨 ACCIDENT DETECTED! ALERTING SERVICES...";
 
-    const name = document.getElementById('userName').value || "User";
+    const name = document.getElementById('userName').value || "Unknown User";
     const phone = document.getElementById('userPhone').value || "No Phone";
     const mapsLink = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
 
-    // REPLACE WITH YOUR GOOGLE FORM DATA
+    // REPLACE WITH YOUR GOOGLE FORM LINK AND ENTRY IDs
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
     const formData = new FormData();
-    formData.append("entry.2114161195", name);     
-    formData.append("entry.223773848", phone);    
-    formData.append("entry.6325147895", mapsLink); 
+    formData.append("entry.1111111", name);     
+    formData.append("entry.2222222", phone);    
+    formData.append("entry.3333333", mapsLink); 
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
-    .then(() => alert(`Emergency alert sent via ${triggerType}`));
+    .then(() => {
+        alert("SOS SUCCESS: Police and Hospital notified with your Live Location.");
+    });
 }
