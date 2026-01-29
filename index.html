@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accident Alert SOS</title>
+    <title>Manual SOS System</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div class="container">
-        <h1>Emergency SOS</h1>
+        <h1>Emergency Alert System</h1>
+        
         <div class="input-group">
             <input type="text" id="userName" placeholder="Driver Name">
-            <input type="tel" id="userPhone" placeholder="Emergency Contact">
+            <input type="tel" id="userPhone" placeholder="Emergency Contact Number">
         </div>
         
-        <button id="accelBtn" onclick="requestPermission()">ENABLE CRASH SENSORS</button>
+        <div id="map" style="height: 300px; margin: 20px 0; border-radius: 12px;"></div>
+
+        <button class="sos-btn" onclick="sendManualSOS()">
+            <div class="inner-btn">SOS</div>
+        </button>
         
-        <div id="map"></div>
-        <p id="status">Monitoring Trip...</p>
+        <p id="status">GPS active. Tap SOS to notify services.</p>
     </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
 </body>
