@@ -30,12 +30,13 @@ function sendManualSOS() {
     // REPLACE WITH YOUR GOOGLE FORM DATA
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
     const formData = new FormData();
-    formData.append("entry.1111111", name);     // Replace with your Name ID
-    formData.append("entry.2222222", phone);    // Replace with your Phone ID
-    formData.append("entry.3333333", mapsLink); // Replace with your Location ID
+    formData.append("entry.2114161195", name);     // Replace with your Name ID
+    formData.append("entry.223773848", phone);    // Replace with your Phone ID
+    formData.append("entry.6325147895", mapsLink); // Replace with your Location ID
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
     .then(() => {
         alert("Emergency services have been notified of your location.");
     });
 }
+
