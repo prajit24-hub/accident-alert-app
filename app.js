@@ -50,10 +50,11 @@ function sendEmergencyAlert() {
     // REPLACE WITH YOUR GOOGLE FORM DATA
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
     const formData = new FormData();
-    formData.append("entry.1111111", name);     
-    formData.append("entry.2222222", phone);    
-    formData.append("entry.3333333", mapsLink); 
+    formData.append("entry.2114161195", name);     
+    formData.append("entry.223773848", phone);    
+    formData.append("entry.6325147895", mapsLink); 
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
     .then(() => alert("Emergency alert shared with dispatch."));
 }
+
