@@ -1,6 +1,26 @@
-body { background-color: #0f0f0f; color: white; font-family: sans-serif; text-align: center; margin: 0; }
-.container { padding: 20px; }
-input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; }
-#map { height: 300px; margin: 20px 0; border-radius: 15px; border: 1px solid #333; }
-.sos-btn { background: rgba(255, 0, 0, 0.3); border: 2px solid #ff4d4d; width: 140px; height: 140px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-.inner-btn { background: #ff4d4d; width: 110px; height: 110px; border-radius: 50%; line-height: 110px; font-size: 24px; font-weight: bold; box-shadow: 0 0 15px rgba(255, 77, 77, 0.5); color: white;}
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: red;
+}
+
+button {
+    font-size: 20px;
+    padding: 10px 20px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#map {
+    width: 100%;
+    height: 400px;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+}
