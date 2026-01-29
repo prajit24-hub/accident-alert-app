@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software SOS App</title>
+    <title>Life Rescue SOS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-    <div class="container" style="height: 100vh; display: flex; flex-direction: column;">
-        <h1>Emergency Alert</h1>
-        <input type="text" id="userName" placeholder="Driver Name">
-        <input type="tel" id="userPhone" placeholder="Emergency Contact">
+    <div class="container">
+        <h1>Emergency Rescue System</h1>
         
-        <div id="map" style="flex-grow: 1; margin: 15px 0; border-radius: 12px;"></div>
-        
-        <div id="gesture-zone" style="background: #333; padding: 20px; border-radius: 12px; border: 2px dashed #ff4d4d;">
-            <p id="status" style="color: #ff4d4d; font-weight: bold; margin: 0;">
-                LONG-PRESS ANYWHERE TO TRIGGER SOS
-            </p>
+        <div class="input-group">
+            <input type="text" id="userName" placeholder="Driver Name">
+            <input type="tel" id="userPhone" placeholder="Emergency Contact">
+        </div>
+
+        <div id="map"></div>
+
+        <div id="shake-zone">
+            <p id="status">RAPID MOVEMENT OR SHAKE TO ACTIVATE SOS</p>
+            <div id="progress-fill"></div>
         </div>
     </div>
 
