@@ -6,6 +6,7 @@ var marker = L.marker([0, 0]).addTo(map);
 window.userLat = 0;
 window.userLng = 0;
 let pressTimer;
+let lastTap = 0;
 
 // 2. Track GPS Location
 if (navigator.geolocation) {
@@ -17,31 +18,40 @@ if (navigator.geolocation) {
     }, null, { enableHighAccuracy: true });
 }
 
-// 3. SOFTWARE GESTURE: Long-Press Detection
-// Triggers if the user holds their finger anywhere on the screen for 3 seconds
-window.addEventListener('mousedown', startPress);
-window.addEventListener('touchstart', startPress);
-window.addEventListener('mouseup', cancelPress);
-window.addEventListener('touchend', cancelPress);
+// 3. SOFTWARE GESTURE: Double-Tap & Long-Press
+window.addEventListener('touchstart', handleStart);
+window.addEventListener('touchend', handleEnd);
+window.addEventListener('mousedown', handleStart);
+window.addEventListener('mouseup', handleEnd);
 
-function startPress() {
-    document.getElementById('status').innerText = "Hold for 3 seconds to send SOS...";
-    pressTimer = window.setTimeout(function() {
-        sendEmergencyAlert();
-    }, 3000); // 3000ms = 3 seconds
+function handleStart(e) {
+    // Check for Double-Tap
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300; // 300ms window
+    if (now - lastTap < DOUBLE_TAP_DELAY) {
+        sendEmergencyAlert("Double-Tap Detected");
+        return;
+    }
+    lastTap = now;
+
+    // Start Long-Press Timer
+    document.getElementById('status').innerText = "Hold for 3s or Double-Tap to SOS";
+    pressTimer = window.setTimeout(() => {
+        sendEmergencyAlert("Long-Press Detected");
+    }, 3000);
 }
 
-function cancelPress() {
+function handleEnd() {
     clearTimeout(pressTimer);
-    if (document.getElementById('status').innerText.includes("Hold")) {
+    if (!document.getElementById('status').innerText.includes("SENT")) {
         document.getElementById('status').innerText = "Monitoring Active...";
     }
 }
 
 // 4. Send SOS Function
-function sendEmergencyAlert() {
+function sendEmergencyAlert(triggerType) {
     document.body.style.backgroundColor = "#d32f2f";
-    document.getElementById('status').innerText = "🚨 SOS SENT! POLICE & HOSPITAL NOTIFIED.";
+    document.getElementById('status').innerText = `🚨 SOS SENT! (${triggerType})`;
 
     const name = document.getElementById('userName').value || "User";
     const phone = document.getElementById('userPhone').value || "No Phone";
@@ -55,6 +65,5 @@ function sendEmergencyAlert() {
     formData.append("entry.6325147895", mapsLink); 
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
-    .then(() => alert("Emergency alert shared with dispatch."));
+    .then(() => alert(`Emergency alert sent via ${triggerType}`));
 }
-
