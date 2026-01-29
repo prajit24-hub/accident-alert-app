@@ -2,22 +2,27 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Emergency SOS Web App</title>
+    <title>Emergency SOS App</title>
+
+    <!-- Leaflet CSS MUST be in head -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <h1>🚨 Emergency SOS</h1>
 
-    <!-- SOS Button -->
-    <button id="sosBtn">SEND SOS</button>
+    <button onclick="sendSOS('Button')">SEND SOS</button>
 
-    <!-- Map Container -->
-    <div id="map" style="width:100%;height:400px;margin-top:20px;"></div>
+    <!-- Map container -->
+    <div id="map"></div>
 
+    <!-- Leaflet JS MUST load BEFORE script.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Your JS LAST -->
     <script src="script.js"></script>
 
-    <!-- Leaflet JS and CSS for map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
