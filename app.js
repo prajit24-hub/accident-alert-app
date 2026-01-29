@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
     // ====== GOOGLE FORM SETTINGS ======
     const FORM_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?usp=pp_url";
-    const ENTRY_LAT = "entry.111111";      // Latitude question ID
-    const ENTRY_LON = "entry.222222";      // Longitude question ID
-    const ENTRY_TYPE = "entry.333333";     // Trigger type question ID
+    const ENTRY_LAT = "entry.2110052793";      // Latitude question ID
+    const ENTRY_LON = "entry.773656180";      // Longitude question ID
+    const ENTRY_TYPE = "entry.354081134";     // Trigger type question ID
 
     // Function to send SOS
     function sendSOS(triggerType){
@@ -54,3 +54,4 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
 });
+
