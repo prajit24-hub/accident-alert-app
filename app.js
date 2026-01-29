@@ -5,8 +5,9 @@ var marker = L.marker([0, 0]).addTo(map);
 
 window.userLat = 0;
 window.userLng = 0;
+let pressTimer;
 
-// 2. Software-based GPS Tracking
+// 2. Track GPS Location
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
         window.userLat = position.coords.latitude;
@@ -16,27 +17,43 @@ if (navigator.geolocation) {
     }, null, { enableHighAccuracy: true });
 }
 
-// 3. Manual SOS Trigger
-function sendManualSOS() {
-    // Provide immediate visual feedback
+// 3. SOFTWARE GESTURE: Long-Press Detection
+// Triggers if the user holds their finger anywhere on the screen for 3 seconds
+window.addEventListener('mousedown', startPress);
+window.addEventListener('touchstart', startPress);
+window.addEventListener('mouseup', cancelPress);
+window.addEventListener('touchend', cancelPress);
+
+function startPress() {
+    document.getElementById('status').innerText = "Hold for 3 seconds to send SOS...";
+    pressTimer = window.setTimeout(function() {
+        sendEmergencyAlert();
+    }, 3000); // 3000ms = 3 seconds
+}
+
+function cancelPress() {
+    clearTimeout(pressTimer);
+    if (document.getElementById('status').innerText.includes("Hold")) {
+        document.getElementById('status').innerText = "Monitoring Active...";
+    }
+}
+
+// 4. Send SOS Function
+function sendEmergencyAlert() {
     document.body.style.backgroundColor = "#d32f2f";
-    document.getElementById('status').innerText = "🚨 ALERT SENT! NOTIFYING POLICE & HOSPITAL...";
+    document.getElementById('status').innerText = "🚨 SOS SENT! POLICE & HOSPITAL NOTIFIED.";
 
     const name = document.getElementById('userName').value || "User";
     const phone = document.getElementById('userPhone').value || "No Phone";
-    // Create clickable fleet location link
     const mapsLink = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
 
     // REPLACE WITH YOUR GOOGLE FORM DATA
     const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
     const formData = new FormData();
-    formData.append("entry.2114161195", name);     // Replace with your Name ID
-    formData.append("entry.223773848", phone);    // Replace with your Phone ID
-    formData.append("entry.6325147895", mapsLink); // Replace with your Location ID
+    formData.append("entry.1111111", name);     
+    formData.append("entry.2222222", phone);    
+    formData.append("entry.3333333", mapsLink); 
 
     fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
-    .then(() => {
-        alert("Emergency services have been notified of your location.");
-    });
+    .then(() => alert("Emergency alert shared with dispatch."));
 }
-
