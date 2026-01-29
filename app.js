@@ -1,34 +1,37 @@
-var map = L.map('map').setView([0, 0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-var marker = L.marker([0, 0]).addTo(map);
+function sendSOS() {
+  document.getElementById("status").innerText = "Getting your location...";
 
-window.userLat = 0;
-window.userLng = 0;
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      let latitude = position.coords.latitude;
+      let longitude = position.coords.longitude;
 
-if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(position => {
-        window.userLat = position.coords.latitude;
-        window.userLng = position.coords.longitude;
-        map.setView([window.userLat, window.userLng], 16);
-        marker.setLatLng([window.userLat, window.userLng]);
-    }, null, { enableHighAccuracy: true });
+      // Only location message
+      let message = "HELP! My live location: " + latitude + ", " + longitude;
+
+      // Show message on page
+      document.getElementById("status").innerText = "SOS Sent!\n" + message;
+
+      // Update map
+      showMap(latitude, longitude);
+
+      // Optional: send to server or Google Sheet
+      // sendToSheet(message);
+    },
+    function(error) {
+      document.getElementById("status").innerText = "Error getting location: " + error.message;
+    }
+  );
 }
 
-function sendManualSOS() {
-    document.body.style.backgroundColor = "#d32f2f";
-    document.getElementById('status').innerText = "🚨 ALERT SENT TO POLICE & HOSPITAL";
-
-    const name = document.getElementById('userName').value || "Manual User";
-    const phone = document.getElementById('userPhone').value || "No Phone";
-    const mapsLink = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
-
-    // REPLACE THE URL AND ENTRY NUMBERS BELOW
-    const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
-    const formData = new FormData();
-    formData.append("entry.1111111", name);     
-    formData.append("entry.2222222", phone);    
-    formData.append("entry.3333333", mapsLink); 
-
-    fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
-    .then(() => { alert("Location shared with Emergency Services."); });
+function showMap(lat, lng) {
+  const map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: lat, lng: lng },
+    zoom: 15
+  });
+  new google.maps.Marker({
+    position: { lat: lat, lng: lng },
+    map: map,
+    title: "Your Location"
+  });
 }
