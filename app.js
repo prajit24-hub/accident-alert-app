@@ -1,57 +1,34 @@
-document.addEventListener("DOMContentLoaded", function(){
+var map = L.map('map').setView([0, 0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+var marker = L.marker([0, 0]).addTo(map);
 
-    // ====== GOOGLE FORM SETTINGS ======
-    const FORM_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?usp=pp_url";
-    const ENTRY_LAT = "entry.2110052793";      // Latitude question ID
-    const ENTRY_LON = "entry.773656180";      // Longitude question ID
-    const ENTRY_TYPE = "entry.354081134";     // Trigger type question ID
+window.userLat = 0;
+window.userLng = 0;
 
-    // Function to send SOS
-    function sendSOS(triggerType){
-        if(!navigator.geolocation){
-            alert("Geolocation not supported!");
-            return;
-        }
+if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(position => {
+        window.userLat = position.coords.latitude;
+        window.userLng = position.coords.longitude;
+        map.setView([window.userLat, window.userLng], 16);
+        marker.setLatLng([window.userLat, window.userLng]);
+    }, null, { enableHighAccuracy: true });
+}
 
-        navigator.geolocation.getCurrentPosition(function(position){
-            let lat = position.coords.latitude;
-            let lon = position.coords.longitude;
+function sendManualSOS() {
+    document.body.style.backgroundColor = "#d32f2f";
+    document.getElementById('status').innerText = "🚨 ALERT SENT TO POLICE & HOSPITAL";
 
-            // Open Google Form with live location
-            let formURL = FORM_URL +
-                "&" + ENTRY_LAT + "=" + lat +
-                "&" + ENTRY_LON + "=" + lon +
-                "&" + ENTRY_TYPE + "=" + triggerType;
+    const name = document.getElementById('userName').value || "Manual User";
+    const phone = document.getElementById('userPhone').value || "No Phone";
+    const mapsLink = `https://www.google.com/maps?q=${window.userLat},${window.userLng}`;
 
-            window.open(formURL, "_blank"); // sends data to Sheet
-            alert("SOS Sent!\nLatitude: "+lat+"\nLongitude: "+lon);
+    // REPLACE THE URL AND ENTRY NUMBERS BELOW
+    const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+    const formData = new FormData();
+    formData.append("entry.1111111", name);     
+    formData.append("entry.2222222", phone);    
+    formData.append("entry.3333333", mapsLink); 
 
-            // Show live map using OpenStreetMap
-            document.getElementById("map").src =
-                "https://www.openstreetmap.org/export/embed.html?bbox=" 
-                + (lon-0.01) + "%2C" + (lat-0.01) + "%2C" + (lon+0.01) + "%2C" + (lat+0.01) 
-                + "&layer=mapnik&marker=" + lat + "%2C" + lon;
-
-        }, function(){
-            alert("Location permission denied!");
-        });
-    }
-
-    // SOS button click
-    document.getElementById("sosBtn").addEventListener("click", function(){
-        sendSOS("Button");
-    });
-
-    // Shake detection
-    let lastX=0, lastY=0, lastZ=0, threshold=15;
-    window.addEventListener("devicemotion", function(event){
-        let acc = event.accelerationIncludingGravity;
-        let delta = Math.abs(acc.x-lastX)+Math.abs(acc.y-lastY)+Math.abs(acc.z-lastZ);
-        if(delta > threshold){
-            sendSOS("Shake");
-        }
-        lastX=acc.x; lastY=acc.y; lastZ=acc.z;
-    });
-
-});
-
+    fetch(formURL, { method: "POST", body: formData, mode: "no-cors" })
+    .then(() => { alert("Location shared with Emergency Services."); });
+}
