@@ -1,28 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Accident Alert App</title>
+  <meta charset="UTF-8">
+  <title>Emergency SOS App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-
-  <!-- Leaflet (FREE MAP) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <h1>🚨 Accident Alert System</h1>
+  <h1>🚨 Emergency SOS</h1>
 
-  <button onclick="sendSOS()">🚨 SEND SOS</button>
+  <button onclick="sendSOS()">SEND SOS</button>
 
-  <p id="status">Waiting for location...</p>
+  <p id="status">Shake phone to send SOS</p>
 
-  <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
-
 </body>
 </html>
