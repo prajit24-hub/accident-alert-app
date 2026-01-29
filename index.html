@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Emergency SOS Web App</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <h1>🚨 Emergency SOS</h1>
@@ -12,9 +11,13 @@
     <!-- SOS Button -->
     <button id="sosBtn">SEND SOS</button>
 
-    <!-- Live Map -->
-    <iframe id="map"></iframe>
+    <!-- Map -->
+    <div id="map" style="width:100%;height:400px;margin-top:20px;"></div>
 
     <script src="script.js"></script>
+
+    <!-- Leaflet JS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </body>
 </html>
