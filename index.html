@@ -1,27 +1,28 @@
-<!DOCTYPE html><!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual SOS App</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>Accident Alert App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Leaflet (FREE MAP) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
+
 <body>
-    <div class="container">
-        <h1>Emergency Alert System</h1>
-        <div class="input-group">
-            <input type="text" id="userName" placeholder="User Name">
-            <input type="tel" id="userPhone" placeholder="Emergency Contact Number">
-        </div>
-        <div id="map"></div>
-        <button class="sos-btn" onclick="sendManualSOS()">
-            <div class="inner-btn">SOS</div>
-        </button>
-        <p id="status">Location active. Tap SOS to notify services.</p>
-    </div>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script>
+
+  <h1>🚨 Accident Alert System</h1>
+
+  <button onclick="sendSOS()">🚨 SEND SOS</button>
+
+  <p id="status">Waiting for location...</p>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+
 </body>
 </html>
