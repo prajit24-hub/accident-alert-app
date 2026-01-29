@@ -1,12 +1,8 @@
 {
-  "name": "Emergency SOS App",
+  "name": "Emergency Communication App",
   "short_name": "SOS",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#ff4d4d",
-  "icons": [
-    { "src": "icon 1.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon 2.png", "sizes": "512x512", "type": "image/png" }
-  ]
+  "background_color": "#121212",
+  "theme_color": "#ff0000"
 }
