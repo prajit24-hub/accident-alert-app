@@ -1,37 +1,57 @@
-function sendSOS() {
-  document.getElementById("status").innerText = "Getting your location...";
+document.addEventListener("DOMContentLoaded", function(){
 
-  navigator.geolocation.getCurrentPosition(
-    function(position) {
-      let latitude = position.coords.latitude;
-      let longitude = position.coords.longitude;
+    // ===== GOOGLE FORM SETTINGS =====
+    const FORM_URL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform?usp=pp_url";
+    const ENTRY_LAT = "entry.111111";   // Latitude question ID
+    const ENTRY_LON = "entry.222222";   // Longitude question ID
+    const ENTRY_TYPE = "entry.333333";  // Trigger type question ID
 
-      // Only location message
-      let message = "HELP! My live location: " + latitude + ", " + longitude;
+    // Function to send SOS
+    function sendSOS(triggerType){
+        if(!navigator.geolocation){
+            alert("Geolocation not supported!");
+            return;
+        }
 
-      // Show message on page
-      document.getElementById("status").innerText = "SOS Sent!\n" + message;
+        navigator.geolocation.getCurrentPosition(function(position){
+            let lat = position.coords.latitude;
+            let lon = position.coords.longitude;
 
-      // Update map
-      showMap(latitude, longitude);
+            // Open Google Form (sends data to Google Sheet)
+            let formURL = FORM_URL +
+                "&" + ENTRY_LAT + "=" + lat +
+                "&" + ENTRY_LON + "=" + lon +
+                "&" + ENTRY_TYPE + "=" + triggerType;
 
-      // Optional: send to server or Google Sheet
-      // sendToSheet(message);
-    },
-    function(error) {
-      document.getElementById("status").innerText = "Error getting location: " + error.message;
+            window.open(formURL, "_blank"); 
+            alert("SOS Sent!\nLatitude: "+lat+"\nLongitude: "+lon);
+
+            // Show live map on website using OpenStreetMap (Fleet Map alternative)
+            document.getElementById("map").src =
+                "https://www.openstreetmap.org/export/embed.html?bbox=" 
+                + (lon-0.01) + "%2C" + (lat-0.01) + "%2C" 
+                + (lon+0.01) + "%2C" + (lat+0.01) 
+                + "&layer=mapnik&marker=" + lat + "%2C" + lon;
+
+        }, function(){
+            alert("Location permission denied!");
+        });
     }
-  );
-}
 
-function showMap(lat, lng) {
-  const map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: lat, lng: lng },
-    zoom: 15
-  });
-  new google.maps.Marker({
-    position: { lat: lat, lng: lng },
-    map: map,
-    title: "Your Location"
-  });
-}
+    // SOS button click
+    document.getElementById("sosBtn").addEventListener("click", function(){
+        sendSOS("Button");
+    });
+
+    // Shake detection
+    let lastX=0, lastY=0, lastZ=0, threshold=15;
+    window.addEventListener("devicemotion", function(event){
+        let acc = event.accelerationIncludingGravity;
+        let delta = Math.abs(acc.x-lastX) + Math.abs(acc.y-lastY) + Math.abs(acc.z-lastZ);
+        if(delta > threshold){
+            sendSOS("Shake");
+        }
+        lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+    });
+
+});
