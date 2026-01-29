@@ -1,43 +1,77 @@
-let map, marker;
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
 
-// 🔹 CHANGE THIS
-const formURL = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+// Request Notification Permission
+if ('Notification' in window) {
+  Notification.requestPermission();
+}
 
+// SOS FUNCTION
 function sendSOS() {
 
+  document.getElementById("status").innerText =
+    "📍 Fetching live location...";
+
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
+    function (position) {
+
+      let lat = position.coords.latitude;
+      let lon = position.coords.longitude;
+
+      // PURE LATITUDE & LONGITUDE BASED FLEET MAP
+      let fleetMapLink =
+        "https://www.openstreetmap.org/#map=18/" +
+        lat + "/" + lon;
 
       document.getElementById("status").innerText =
-        "SOS SENT\nLat: " + lat + "\nLng: " + lng;
+        "🚨 SOS SENT\n\nLatitude: " + lat +
+        "\nLongitude: " + lon;
 
-      // --- SEND TO GOOGLE SHEET ---
-      const data = new FormData();
-      data.append("entry.2114161195", lat);   // Latitude
-      data.append("entry.223773848", lng);   // Longitude
-      data.append("entry.6325147895", "SOS"); // Status
+      // Open map
+      window.open(fleetMapLink, "_blank");
 
-      fetch(formURL, {
-        method: "POST",
-        body: data,
-        mode: "no-cors"
-      });
-
-      // --- MAP ---
-      if (!map) {
-        map = L.map("map").setView([lat, lng], 16);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-        marker = L.marker([lat, lng]).addTo(map);
-      } else {
-        map.setView([lat, lng], 16);
-        marker.setLatLng([lat, lng]);
+      // Notification
+      if (Notification.permission === "granted") {
+        navigator.serviceWorker.ready.then(function (reg) {
+          reg.showNotification("🚨 Emergency SOS Sent", {
+            body: "Lat: " + lat + " , Lon: " + lon
+          });
+        });
       }
     },
-    () => {
-      alert("Location access required!");
+    function () {
+      document.getElementById("status").innerText =
+        "❌ Location permission denied";
     }
   );
 }
 
+/* ---------------------
+   SHAKE DETECTION
+--------------------- */
+
+let lastX = 0;
+let lastY = 0;
+let lastZ = 0;
+let threshold = 15;
+
+window.addEventListener("devicemotion", function (event) {
+
+  let acc = event.accelerationIncludingGravity;
+
+  let delta =
+    Math.abs(acc.x - lastX) +
+    Math.abs(acc.y - lastY) +
+    Math.abs(acc.z - lastZ);
+
+  if (delta > threshold) {
+    sendSOS();
+  }
+
+  lastX = acc.x;
+  lastY = acc.y;
+  lastZ = acc.z;
+
+});
